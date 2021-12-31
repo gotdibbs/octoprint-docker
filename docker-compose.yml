@@ -1,0 +1,37 @@
+version: '2.2'
+
+services:
+  # Backup
+  backup:
+    container_name: backup
+    image: offen/docker-volume-backup:latest
+    restart: always
+    env_file: ./backup.env
+    volumes:
+      - /home/pi/octoprint/home:/backup/octoprint:ro
+      # Mounting the Docker socket allows the script to stop and restart
+      # the container during backup. You can omit this if you don't want
+      # to stop the container
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  # Octoprint
+  octoprint:
+    container_name: octoprint
+    restart: unless-stopped
+    image: octoprint/octoprint:latest
+    environment:
+      - ENABLE_MJPG_STREAMER=true
+      - MJPG_STREAMER_INPUT="-n -r 1920x1080 -f 60 -q 100"
+    ports:
+      - 80:5000
+      - 8080:8080
+    devices:
+      - /dev/ttyACM0
+      - /dev/video0
+      - /dev/video1
+      - /dev/snd/controlC1
+      - /dev/input/event0
+    volumes:
+      - /home/pi/octoprint/home:/octoprint
+    labels:
+      - docker-volume-backup.stop-during-backup=true
