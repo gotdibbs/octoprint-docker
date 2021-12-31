@@ -1,4 +1,4 @@
-version: '2.2'
+version: '2.1'
 
 services:
   # Backup
@@ -8,7 +8,7 @@ services:
     restart: always
     env_file: ./backup.env
     volumes:
-      - /home/pi/octoprint/home:/backup/octoprint:ro
+      - ${VOLUME_DIR}:/backup/octoprint:ro
       # Mounting the Docker socket allows the script to stop and restart
       # the container during backup. You can omit this if you don't want
       # to stop the container
@@ -32,6 +32,6 @@ services:
       - /dev/snd/controlC1
       - /dev/input/event0
     volumes:
-      - /home/pi/octoprint/home:/octoprint
+      - ${VOLUME_DIR}:/octoprint
     labels:
       - docker-volume-backup.stop-during-backup=true
