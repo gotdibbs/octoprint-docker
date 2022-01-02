@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.9'
 
 services:
   # Backup
@@ -7,12 +7,15 @@ services:
     image: offen/docker-volume-backup:latest
     restart: always
     env_file: ./backup.env
+    entrypoint: backup
     volumes:
       - ${VOLUME_DIR}:/backup/octoprint:ro
       # Mounting the Docker socket allows the script to stop and restart
       # the container during backup. You can omit this if you don't want
       # to stop the container
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    profiles:
+      - backup
 
   # Octoprint
   octoprint:
